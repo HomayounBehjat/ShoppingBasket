@@ -33,7 +33,7 @@ public class ShoppingBasketTest {
 
         shoppingBasket.calculateTotals(new CalculateBasketTotal());
 
-        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(2.40).setScale(2, RoundingMode.HALF_UP)));
+        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(1.20).setScale(2, RoundingMode.HALF_UP)));
     }
 
     @Test
@@ -99,11 +99,11 @@ public class ShoppingBasketTest {
     @Test
     public void testTotalshoppingBasketValueApplesAndOranges() {
         shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
-        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 2, orangeCost));
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 4, orangeCost));
 
         shoppingBasket.calculateTotals(new CalculateBasketTotal());
 
-        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(2.3).setScale(2, RoundingMode.HALF_UP)));
+        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(1.95).setScale(2, RoundingMode.HALF_UP)));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -112,5 +112,24 @@ public class ShoppingBasketTest {
         shoppingBasket.calculateTotals(new CalculateBasketTotal());
 
         assertThat(shoppingBasket.getTotalBill(), is(new BigDecimal(2.7)));
+    }
+
+    @Test
+    public void testDiscountOnApple() {
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
+
+        shoppingBasket.calculateTotals(new CalculateBasketTotal());
+
+        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(1.2).setScale(2, RoundingMode.HALF_UP)));
+    }
+
+    @Test
+    public void testDiscountOnAppleAndOrange() {
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 4, appleCost));
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 8, orangeCost));
+
+        shoppingBasket.calculateTotals(new CalculateBasketTotal());
+
+        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(2.7).setScale(2, RoundingMode.HALF_UP)));
     }
 }
