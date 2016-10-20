@@ -6,11 +6,15 @@ public class ShoppingBasket {
 
     private BigDecimal totalBill = new BigDecimal(0.0);
 
-    private List<ShoppingItem> shoppingItems = new ArrayList<ShoppingItem>();
+    private List<ShoppingItem> shoppingItems = new ArrayList<>();
 
     public void addShoppingItem(ShoppingItem shoppingCartItem) {
         shoppingCartItem.setShoppingCart(this);
         shoppingItems.add(shoppingCartItem);
+    }
+
+    public void calculateTotals(CalculateBasketTotal calculateBasketTotal) {
+        calculateBasketTotal.calculateBasketTotal(this);
     }
 
     public List<ShoppingItem> getShoppingItems() {
@@ -27,9 +31,5 @@ public class ShoppingBasket {
 
     public void setTotalBill(BigDecimal totalBill) {
         this.totalBill = totalBill;
-    }
-
-    public void calculateTotals(CalculateBasketTotal calculateBasketTotal) {
-        calculateBasketTotal.calculateBasketTotal(this);
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CalculateBasketTotal {
 
-    private List shoppingItemsList = Arrays.asList(ShoppingItems.values());
+    private List<ShoppingItems> shoppingItemsList = Arrays.asList(ShoppingItems.values());
 
     public void calculateBasketTotal(ShoppingBasket shoppingBasket) {
 
@@ -19,18 +19,6 @@ public class CalculateBasketTotal {
         }
 
         System.out.println("\nAmount to pay : �" + shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP));
-    }
-
-    public void calculateShoppingItem(ShoppingItem item) {
-
-        BigDecimal itemCost = item.getPrice().multiply(BigDecimal.valueOf(calculateDiscount(item)));
-
-        item.getShoppingCart().setTotalBill(
-                item.getShoppingCart().getTotalBill().add(itemCost));
-
-        System.out.println(item.getQuantity() + " x " +
-                item.getName().toUpperCase() +
-                " @ " + item.getPrice().setScale(2, RoundingMode.HALF_UP) + " - �" + itemCost.setScale(2, RoundingMode.HALF_UP));
     }
 
     /*
@@ -65,5 +53,17 @@ public class CalculateBasketTotal {
         }
 
         return discountedQuantity;
+    }
+
+    public void calculateShoppingItem(ShoppingItem item) {
+
+        BigDecimal itemCost = item.getPrice().multiply(BigDecimal.valueOf(calculateDiscount(item)));
+
+        item.getShoppingCart().setTotalBill(
+                item.getShoppingCart().getTotalBill().add(itemCost));
+
+        System.out.println(item.getQuantity() + " x " +
+                item.getName().toUpperCase() +
+                " @ " + item.getPrice().setScale(2, RoundingMode.HALF_UP) + " - �" + itemCost.setScale(2, RoundingMode.HALF_UP));
     }
 }

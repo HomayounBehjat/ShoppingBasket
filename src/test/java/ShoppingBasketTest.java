@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
@@ -18,13 +19,32 @@ import static org.junit.Assert.assertThat;
 
 public class ShoppingBasketTest {
 
-    static BigDecimal appleCost = new BigDecimal(0.60);
-    static BigDecimal orangeCost = new BigDecimal(0.25);
-    ShoppingBasket shoppingBasket;
+    private static final BigDecimal appleCost = new BigDecimal(0.60);
+    private static final BigDecimal orangeCost = new BigDecimal(0.25);
+    private ShoppingBasket shoppingBasket;
 
     @Before
     public void setUp() {
         shoppingBasket = new ShoppingBasket();
+    }
+
+    @Test
+    public void testDiscountOnApple() {
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
+
+        shoppingBasket.calculateTotals(new CalculateBasketTotal());
+
+        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(1.2).setScale(2, RoundingMode.HALF_UP)));
+    }
+
+    @Test
+    public void testDiscountOnAppleAndOrange() {
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 4, appleCost));
+        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 8, orangeCost));
+
+        shoppingBasket.calculateTotals(new CalculateBasketTotal());
+
+        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(2.7).setScale(2, RoundingMode.HALF_UP)));
     }
 
     @Test
@@ -56,11 +76,11 @@ public class ShoppingBasketTest {
     }
 
     @Test
-    public void testshoppingBasketContainsThreeApplesAndTwoOranges() {
+    public void testShoppingBasketContainsThreeApplesAndTwoOranges() {
         shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
         shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 2, orangeCost));
 
-        Collection matchers = Arrays.asList(
+        Collection<org.hamcrest.Matcher<? super ShoppingItem>> matchers = Arrays.asList(
                 hasProperty("name", is(ShoppingItems.Apple.toString())),
                 hasProperty("name", is(ShoppingItems.Orange.toString())));
 
@@ -72,32 +92,31 @@ public class ShoppingBasketTest {
     }
 
     @Test
-    public void testshoppingBasketContainsThreeApplesOnly() {
+    public void testShoppingBasketContainsThreeApplesOnly() {
         shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
 
-        Collection matchers = Arrays.asList(
-                hasProperty("name", is(ShoppingItems.Apple.toString())));
+        Collection<org.hamcrest.Matcher<? super ShoppingItem>> matchers = Collections.singletonList(hasProperty("name", is(ShoppingItems.Apple.toString())));
 
         assertThat(shoppingBasket.getShoppingItems(), containsInAnyOrder(matchers));
         assertThat(shoppingBasket.getShoppingItems(), hasItem(Matchers.<ShoppingItem>hasProperty("quantity", equalTo(3))));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testshoppingBasketDoesNotContainItemsInSet() {
+    public void testShoppingBasketDoesNotContainItemsInSet() {
         shoppingBasket.addShoppingItem(new ShoppingItem("Strawberry", 1, BigDecimal.valueOf(0.15)));
 
         for (ShoppingItem _item : shoppingBasket.getShoppingItems()) {
-            assertEquals(false, ShoppingItems.valueOf(_item.getName()));
+            assertEquals("Strawberry", ShoppingItems.valueOf(_item.getName()).toString());
         }
     }
 
     @Test
-    public void testshoppingBasketIsEmpty() {
+    public void testShoppingBasketIsEmpty() {
         assertThat(shoppingBasket.getShoppingItems(), is(IsNull.notNullValue()));
     }
 
     @Test
-    public void testTotalshoppingBasketValueApplesAndOranges() {
+    public void testTotalShoppingBasketValueApplesAndOranges() {
         shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
         shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 4, orangeCost));
 
@@ -107,29 +126,10 @@ public class ShoppingBasketTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testUnknowItem() {
+    public void testUnknownItem() {
         shoppingBasket.addShoppingItem(new ShoppingItem("Peaches", 4, appleCost));
         shoppingBasket.calculateTotals(new CalculateBasketTotal());
 
         assertThat(shoppingBasket.getTotalBill(), is(new BigDecimal(2.7)));
-    }
-
-    @Test
-    public void testDiscountOnApple() {
-        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 3, appleCost));
-
-        shoppingBasket.calculateTotals(new CalculateBasketTotal());
-
-        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(1.2).setScale(2, RoundingMode.HALF_UP)));
-    }
-
-    @Test
-    public void testDiscountOnAppleAndOrange() {
-        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Apple.toString(), 4, appleCost));
-        shoppingBasket.addShoppingItem(new ShoppingItem(ShoppingItems.Orange.toString(), 8, orangeCost));
-
-        shoppingBasket.calculateTotals(new CalculateBasketTotal());
-
-        assertThat(shoppingBasket.getTotalBill().setScale(2, RoundingMode.HALF_UP), is(new BigDecimal(2.7).setScale(2, RoundingMode.HALF_UP)));
     }
 }
